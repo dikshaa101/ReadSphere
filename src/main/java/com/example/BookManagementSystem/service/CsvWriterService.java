@@ -4,32 +4,59 @@ import com.example.BookManagementSystem.model.Book;
 import org.springframework.stereotype.Service;
 
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 
 @Service
 public class CsvWriterService {
 
-    private static final String CSV_FILE =
-            "src/main/resources/books.csv";
+    public void saveBook(Book book) throws IOException {
 
-    public void saveBook(Book book) throws Exception {
+        try (PrintWriter writer =
+                     new PrintWriter(
+                             new FileWriter("books.csv", true))) {
 
-        FileWriter writer =
-                new FileWriter(CSV_FILE, true);
+            writer.println(
+                    book.getId() + "," +
+                            book.getBookName() + "," +
+                            book.getAuthorName() + "," +
+                            book.getCategory() + "," +
+                            book.getPublisher() + "," +
+                            book.getPrice() + "," +
+                            book.getQuantity() + "," +
+                            book.getPublishedYear() + "," +
+                            book.getIsbn() + "," +
+                            book.getLanguage()
+            );
+        }
+    }
 
-        writer.write(
-                "\n" +
+    public void overwriteBooks(List<Book> books)
+            throws IOException {
+
+        try (PrintWriter writer =
+                     new PrintWriter(
+                             new FileWriter("books.csv"))) {
+
+            writer.println(
+                    "id,bookName,authorName,category,publisher,price,quantity,publishedYear,isbn,language");
+
+            for (Book book : books) {
+
+                writer.println(
                         book.getId() + "," +
-                        book.getBookName() + "," +
-                        book.getAuthorName() + "," +
-                        book.getCategory() + "," +
-                        book.getPublisher() + "," +
-                        book.getPrice() + "," +
-                        book.getQuantity() + "," +
-                        book.getPublishedYear() + "," +
-                        book.getIsbn() + "," +
-                        book.getLanguage()
-        );
-
-        writer.close();
+                                book.getBookName() + "," +
+                                book.getAuthorName() + "," +
+                                book.getCategory() + "," +
+                                book.getPublisher() + "," +
+                                book.getPrice() + "," +
+                                book.getQuantity() + "," +
+                                book.getPublishedYear() + "," +
+                                book.getIsbn() + "," +
+                                book.getLanguage()
+                );
+            }
+        }
     }
 }

@@ -2,8 +2,6 @@ package com.example.BookManagementSystem.service;
 
 import com.example.BookManagementSystem.model.Book;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,36 +10,83 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookService {
 
-    private final CsvWriterService csvWriterService;
     private final CsvReaderService csvReaderService;
+    private final CsvWriterService csvWriterService;
     private final JsonGeneratorService jsonGeneratorService;
-    private static final Logger logger =
-            LoggerFactory.getLogger(BookService.class);
-
 
     public void addBook(Book book) throws Exception {
 
-        logger.info(
-                "Adding new book: {}",
-                book.getBookName()
-        );
-
-        // Save to CSV
         csvWriterService.saveBook(book);
 
-        logger.info(
-                "Book added to CSV successfully"
+        jsonGeneratorService.generateJson(
+                csvReaderService.readBooks()
         );
+    }
 
-        // Read latest CSV
+    public List<Book> getAllBooks() {
+        return csvReaderService.readBooks();
+    }
+
+    public List<Book> getBooksByCategory(String category) {
+
+        return csvReaderService.readBooks()
+                .stream()
+                .filter(book ->
+                        book.getCategory()
+                                .equalsIgnoreCase(category))
+                .toList();
+    }
+
+    public List<Book> getBooksByAuthor(String author) {
+
+        return csvReaderService.readBooks()
+                .stream()
+                .filter(book ->
+                        book.getAuthorName()
+                                .equalsIgnoreCase(author))
+                .toList();
+    }
+
+    public void deleteBook(int id) throws Exception {
+
         List<Book> books =
                 csvReaderService.readBooks();
 
-        // Generate fresh JSON
-        jsonGeneratorService.generateJson(books);
+        books.removeIf(book ->
+                book.getId() == id);
 
-        logger.info(
-                "JSON synchronized successfully"
-        );
+        csvWriterService.overwriteBooks(books);
+
+        jsonGeneratorService.generateJson(books);
+    }
+
+    public void updateBook(int id,
+                           Book updatedBook)
+            throws Exception {
+
+        List<Book> books =
+                csvReaderService.readBooks();
+
+        boolean found = false;
+
+        for (int i = 0; i < books.size(); i++) {
+
+            if (books.get(i).getId() == id) {
+
+                books.set(i, updatedBook);
+
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new RuntimeException(
+                    "Book not found with id " + id);
+        }
+
+        csvWriterService.overwriteBooks(books);
+
+        jsonGeneratorService.generateJson(books);
     }
 }
