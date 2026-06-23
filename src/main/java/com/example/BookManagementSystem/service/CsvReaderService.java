@@ -1,6 +1,7 @@
 package com.example.BookManagementSystem.service;
 
 import com.example.BookManagementSystem.model.Book;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -8,6 +9,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,27 +19,33 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 @Service
+@Slf4j
 public class CsvReaderService {
-    private static final Logger logger =
-            LoggerFactory.getLogger(CsvReaderService.class);
+
+    @Value("${csv.file.path:}")
+    private String csvLocation;
 
     private final ResourceLoader resourceLoader;
-    private final String csvLocation;
 
-    public CsvReaderService(ResourceLoader resourceLoader,
-                            @Value("${books.csv.location:classpath:books.csv}") String csvLocation) {
+    @Autowired
+    public CsvReaderService(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    // Convenience constructor for tests and programmatic use
+    public CsvReaderService(ResourceLoader resourceLoader, String csvLocation) {
         this.resourceLoader = resourceLoader;
         this.csvLocation = csvLocation;
     }
 
     public List<Book> readBooks() {
 
-        logger.info("Reading books from CSV file from {}", csvLocation);
+        log.info("Reading books from CSV file from {}", csvLocation);
 
         List<Book> books = new ArrayList<>();
 
         if (csvLocation == null || csvLocation.trim().isEmpty()) {
-            logger.warn("CSV location is not configured");
+            log.warn("CSV location is not configured");
             return books;
         }
 
@@ -60,14 +68,14 @@ public class CsvReaderService {
             }
 
             if (!resource.exists() || !resource.isReadable()) {
-                logger.warn("CSV resource not found or not readable: {}", location);
+                log.warn("CSV resource not found or not readable: {}", location);
                 return books;
             }
 
             // Basic filename constraint: must end with .csv
             String filename = resource.getFilename();
             if (filename == null || !filename.toLowerCase().endsWith(".csv")) {
-                logger.warn("Configured resource does not appear to be a CSV file: {}", filename);
+                log.warn("Configured resource does not appear to be a CSV file: {}", filename);
                 return books;
             }
 
@@ -87,7 +95,7 @@ public class CsvReaderService {
                     if (row == null) continue;
 
                     if (row.length < 10) {
-                        logger.warn("Skipping invalid row (insufficient columns) at line {}: {}", i + 1, Arrays.toString(row));
+                        log.warn("Skipping invalid row (insufficient columns) at line {}: {}", i + 1, Arrays.toString(row));
                         continue;
                     }
 
@@ -114,16 +122,16 @@ public class CsvReaderService {
                         books.add(book);
 
                     } catch (NumberFormatException ex) {
-                        logger.warn("Invalid numeric data at line {}: {}", i + 1, Arrays.toString(row));
+                        log.warn("Invalid numeric data at line {}: {}", i + 1, Arrays.toString(row));
                     }
                 }
             }
 
         } catch (Exception ex) {
-            logger.error("Error reading CSV: {}", ex.getMessage(), ex);
+            log.error("Error reading CSV: {}", ex.getMessage(), ex);
         }
 
-        logger.info("Total books loaded from CSV: {}", books.size());
+        log.info("Total books loaded from CSV: {}", books.size());
         return books;
     }
 }
