@@ -16,6 +16,21 @@ public class BookService {
 
     public void addBook(Book book) throws Exception {
 
+        List<Book> books = csvReaderService.readBooks();
+
+        if (book.getId() == null) {
+            long maxId = books.stream()
+                    .mapToLong(b -> b.getId() == null ? 0L : b.getId())
+                    .max()
+                    .orElse(0L);
+            book.setId(maxId + 1);
+        } else {
+            boolean exists = books.stream().anyMatch(b -> b.getId() != null && b.getId().equals(book.getId()));
+            if (exists) {
+                throw new RuntimeException("Book already exists with id " + book.getId());
+            }
+        }
+
         csvWriterService.saveBook(book);
 
         jsonGeneratorService.generateJson(
@@ -47,20 +62,23 @@ public class BookService {
                 .toList();
     }
 
-    public void deleteBook(int id) throws Exception {
+    public void deleteBook(Long id) throws Exception {
 
         List<Book> books =
                 csvReaderService.readBooks();
 
-        books.removeIf(book ->
-                book.getId() == id);
+        boolean removed = books.removeIf(book -> book.getId() != null && book.getId().equals(id));
+
+        if (!removed) {
+            throw new RuntimeException("Book not found with id " + id);
+        }
 
         csvWriterService.overwriteBooks(books);
 
         jsonGeneratorService.generateJson(books);
     }
 
-    public void updateBook(int id,
+    public void updateBook(Long id,
                            Book updatedBook)
             throws Exception {
 
@@ -71,8 +89,9 @@ public class BookService {
 
         for (int i = 0; i < books.size(); i++) {
 
-            if (books.get(i).getId() == id) {
+            if (books.get(i).getId() != null && books.get(i).getId().equals(id)) {
 
+                updatedBook.setId(id);
                 books.set(i, updatedBook);
 
                 found = true;

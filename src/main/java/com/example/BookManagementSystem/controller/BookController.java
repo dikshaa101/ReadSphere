@@ -48,7 +48,7 @@ public class BookController {
 
     @PutMapping("/{id}")
     public String updateBook(
-            @PathVariable int id,
+            @PathVariable Long id,
             @Valid @RequestBody Book book)
             throws Exception {
 
@@ -59,7 +59,7 @@ public class BookController {
 
     @DeleteMapping("/{id}")
     public String deleteBook(
-            @PathVariable int id)
+            @PathVariable Long id)
             throws Exception {
 
         bookService.deleteBook(id);
