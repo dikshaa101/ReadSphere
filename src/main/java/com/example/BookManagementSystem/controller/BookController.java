@@ -2,8 +2,11 @@ package com.example.BookManagementSystem.controller;
 
 import com.example.BookManagementSystem.model.Book;
 import com.example.BookManagementSystem.service.BookService;
+import com.example.BookManagementSystem.dto.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,55 +18,57 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
-    public String addBook(
+    public ResponseEntity<ApiResponse<String>> addBook(
             @Valid @RequestBody Book book)
             throws Exception {
 
         bookService.addBook(book);
 
-        return "Book Added Successfully";
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(201, "Book added successfully", "Book ID: " + book.getId()));
     }
 
     @GetMapping
-    public List<Book> getAllBooks() {
+    public ResponseEntity<ApiResponse<List<Book>>> getAllBooks() {
 
-        return bookService.getAllBooks();
+        List<Book> books = bookService.getAllBooks();
+        return ResponseEntity.ok(new ApiResponse<>(200, "Books retrieved successfully", books));
     }
 
     @GetMapping("/category/{category}")
-    public List<Book> getBooksByCategory(
+    public ResponseEntity<ApiResponse<List<Book>>> getBooksByCategory(
             @PathVariable String category) {
 
-        return bookService
-                .getBooksByCategory(category);
+        List<Book> books = bookService.getBooksByCategory(category);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Books retrieved by category", books));
     }
 
     @GetMapping("/author/{author}")
-    public List<Book> getBooksByAuthor(
+    public ResponseEntity<ApiResponse<List<Book>>> getBooksByAuthor(
             @PathVariable String author) {
 
-        return bookService
-                .getBooksByAuthor(author);
+        List<Book> books = bookService.getBooksByAuthor(author);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Books retrieved by author", books));
     }
 
     @PutMapping("/{id}")
-    public String updateBook(
+    public ResponseEntity<ApiResponse<String>> updateBook(
             @PathVariable Long id,
             @Valid @RequestBody Book book)
             throws Exception {
 
         bookService.updateBook(id, book);
 
-        return "Book Updated Successfully";
+        return ResponseEntity.ok(new ApiResponse<>(200, "Book updated successfully", "Book ID: " + id));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteBook(
+    public ResponseEntity<ApiResponse<String>> deleteBook(
             @PathVariable Long id)
             throws Exception {
 
         bookService.deleteBook(id);
 
-        return "Book Deleted Successfully";
+        return ResponseEntity.ok(new ApiResponse<>(200, "Book deleted successfully", "Book ID: " + id));
     }
 }

@@ -1,5 +1,7 @@
 package com.example.BookManagementSystem.service;
 
+import com.example.BookManagementSystem.exception.BookAlreadyExistsException;
+import com.example.BookManagementSystem.exception.BookNotFoundException;
 import com.example.BookManagementSystem.model.Book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class BookService {
         } else {
             boolean exists = books.stream().anyMatch(b -> b.getId() != null && b.getId().equals(book.getId()));
             if (exists) {
-                throw new RuntimeException("Book already exists with id " + book.getId());
+                throw new BookAlreadyExistsException("Book already exists with id " + book.getId());
             }
         }
 
@@ -70,7 +72,7 @@ public class BookService {
         boolean removed = books.removeIf(book -> book.getId() != null && book.getId().equals(id));
 
         if (!removed) {
-            throw new RuntimeException("Book not found with id " + id);
+            throw new BookNotFoundException("Book not found with id " + id);
         }
 
         csvWriterService.overwriteBooks(books);
@@ -100,7 +102,7 @@ public class BookService {
         }
 
         if (!found) {
-            throw new RuntimeException(
+            throw new BookNotFoundException(
                     "Book not found with id " + id);
         }
 
