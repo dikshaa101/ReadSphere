@@ -5,6 +5,9 @@ import com.example.BookManagementSystem.exception.BookNotFoundException;
 import com.example.BookManagementSystem.model.Book;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.lang.reflect.Field;
+import java.util.Comparator;
+import java.util.Collections;
 
 import java.util.List;
 
@@ -40,8 +43,66 @@ public class BookService {
         );
     }
 
-    public List<Book> getAllBooks() {
-        return csvReaderService.readBooks();
+    public List<Book> getAllBooks(
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
+
+        List<Book> books = csvReaderService.readBooks();
+
+        Comparator<Book> comparator = (book1, book2) -> {
+
+            try {
+
+                Field field = Book.class.getDeclaredField(sortBy);
+
+                field.setAccessible(true);
+
+                Object value1 = field.get(book1);
+                Object value2 = field.get(book2);
+
+                if (value1 == null && value2 == null) {
+                    return 0;
+                }
+
+                if (value1 == null) {
+                    return -1;
+                }
+
+                if (value2 == null) {
+                    return 1;
+                }
+
+                return ((Comparable) value1).compareTo(value2);
+
+            } catch (Exception e) {
+
+                throw new RuntimeException("Invalid sort field : " + sortBy);
+
+            }
+
+        };
+
+        books.sort(comparator);
+
+        if (direction.equalsIgnoreCase("desc")) {
+
+            Collections.reverse(books);
+
+        }
+
+        int start = page * size;
+
+        int end = Math.min(start + size, books.size());
+
+        if (start >= books.size()) {
+
+            return List.of();
+
+        }
+
+        return books.subList(start, end);
     }
 
     public List<Book> getBooksByCategory(String category) {

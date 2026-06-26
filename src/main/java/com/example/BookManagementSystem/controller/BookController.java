@@ -29,10 +29,23 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Book>>> getAllBooks() {
+    public List<Book> getAllBooks(
 
-        List<Book> books = bookService.getAllBooks();
-        return ResponseEntity.ok(new ApiResponse<>(200, "Books retrieved successfully", books));
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "5") int size,
+
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+
+        return bookService.getAllBooks(
+                page,
+                size,
+                sortBy,
+                direction
+        );
     }
 
     @GetMapping("/category/{category}")
