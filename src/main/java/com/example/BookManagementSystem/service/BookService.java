@@ -4,6 +4,8 @@ import com.example.BookManagementSystem.exception.BookAlreadyExistsException;
 import com.example.BookManagementSystem.exception.BookNotFoundException;
 import com.example.BookManagementSystem.model.Book;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.util.Comparator;
@@ -19,6 +21,7 @@ public class BookService {
     private final CsvWriterService csvWriterService;
     private final JsonGeneratorService jsonGeneratorService;
 
+    @CacheEvict(value = {"books", "booksByCategory", "booksByAuthor"}, allEntries = true)
     public void addBook(Book book) throws Exception {
 
         List<Book> books = csvReaderService.readBooks();
@@ -43,6 +46,7 @@ public class BookService {
         );
     }
 
+    @Cacheable(value = "books", key = "{#page, #size, #sortBy, #direction}")
     public List<Book> getAllBooks(
             int page,
             int size,
@@ -105,6 +109,7 @@ public class BookService {
         return books.subList(start, end);
     }
 
+    @Cacheable(value = "booksByCategory", key = "#category.toLowerCase()")
     public List<Book> getBooksByCategory(String category) {
 
         return csvReaderService.readBooks()
@@ -115,6 +120,7 @@ public class BookService {
                 .toList();
     }
 
+    @Cacheable(value = "booksByAuthor", key = "#author.toLowerCase()")
     public List<Book> getBooksByAuthor(String author) {
 
         return csvReaderService.readBooks()
@@ -125,6 +131,7 @@ public class BookService {
                 .toList();
     }
 
+    @CacheEvict(value = {"books", "booksByCategory", "booksByAuthor"}, allEntries = true)
     public void deleteBook(Long id) throws Exception {
 
         List<Book> books =
@@ -141,6 +148,7 @@ public class BookService {
         jsonGeneratorService.generateJson(books);
     }
 
+    @CacheEvict(value = {"books", "booksByCategory", "booksByAuthor"}, allEntries = true)
     public void updateBook(Long id,
                            Book updatedBook)
             throws Exception {

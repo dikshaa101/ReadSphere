@@ -1,15 +1,4 @@
 [ {
-  "id" : 1,
-  "bookName" : "Clean Code",
-  "authorName" : "Robert C. Martin",
-  "category" : "Programming",
-  "publisher" : "Prentice Hall",
-  "price" : 599.0,
-  "quantity" : 20,
-  "publishedYear" : 2008,
-  "isbn" : "9780132350884",
-  "language" : "English"
-}, {
   "id" : 2,
   "bookName" : "Effective Java",
   "authorName" : "Joshua Bloch",

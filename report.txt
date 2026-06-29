@@ -3,10 +3,10 @@ BOOK MANAGEMENT REPORT
 
 OVERALL STATISTICS
 --------------------------------------------------
-Total Books : 20
-Average Book Price : 909.75
-Total Quantity : 286
-Inventory Value : 239935.0
+Total Books : 19
+Average Book Price : 926.1052631578947
+Total Quantity : 266
+Inventory Value : 227955.0
 Highest Price Book : Introduction to Algorithms (1500.0)
 Lowest Price Book : Head First Java (550.0)
 
@@ -18,7 +18,7 @@ Algorithms : 2 Books
 System Design : 1 Books
 Architecture : 3 Books
 JavaScript : 1 Books
-Programming : 6 Books
+Programming : 5 Books
 Spring : 1 Books
 Software Design : 2 Books
 
@@ -30,7 +30,7 @@ Algorithms : 1100.00
 System Design : 950.00
 Architecture : 1200.00
 JavaScript : 650.00
-Programming : 699.33
+Programming : 719.40
 Spring : 850.00
 Software Design : 924.50
 
@@ -43,12 +43,11 @@ Independently Published : 2 Books
 OReilly : 4 Books
 Manning : 4 Books
 IT Revolution : 1 Books
-Prentice Hall : 1 Books
 CareerCup : 1 Books
 
 LANGUAGE WISE REPORT
 --------------------------------------------------
-English : 20 Books
+English : 19 Books
 
 PUBLICATION YEAR REPORT
 --------------------------------------------------
@@ -63,6 +62,5 @@ PUBLICATION YEAR REPORT
 2003 : 1 Books
 2005 : 1 Books
 2006 : 1 Books
-2008 : 1 Books
 2009 : 1 Books
 2015 : 1 Books

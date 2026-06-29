@@ -1,0 +1,13 @@
+.git
+.idea
+.mvn/wrapper/maven-wrapper.jar
+target
+out
+*.iml
+*.iws
+*.ipr
+*.log
+.env
+local.properties
+books.json
+report.txt

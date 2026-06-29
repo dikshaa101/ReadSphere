@@ -1,5 +1,4 @@
 "id","bookName","authorName","category","publisher","price","quantity","publishedYear","isbn","language"
-"1","Clean Code","Robert C. Martin","Programming","Prentice Hall","599.0","20","2008","9780132350884","English"
 "2","Effective Java","Joshua Bloch","Programming","Addison-Wesley","699.0","15","2018","9780134685991","English"
 "3","Spring in Action","Craig Walls","Programming","Manning","799.0","10","2022","9781617297571","English"
 "4","Java Concurrency in Practice","Brian Goetz","Programming","Addison-Wesley","899.0","8","2006","9780321349606","English"
